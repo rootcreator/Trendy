@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Find trending topics across various platforms.">
+    <meta name="author" content="Your Name">
+    <title>Trends Finder</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    {% block content %}
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Trends Finder</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto d-flex align-items-center">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="regionDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="regionDropdown">
+                            <a class="dropdown-item" href="#" onclick="setRegion('US')">United States</a>
+                            <a class="dropdown-item" href="#" onclick="setRegion('GB')">United Kingdom</a>
+                            <a class="dropdown-item" href="#" onclick="setRegion('CA')">Canada</a>
+                            <a class="dropdown-item" href="#" onclick="setRegion('AU')">Australia</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}" aria-label="Profile">
+                            <i class="fas fa-user"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main role="main" class="container-fluid">
+        <div class="row">
+            <!-- Search Bar -->
+            <div class="col-12 my-4">
+                <form action="{% url 'search_view' %}" method="get" class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Search for trends..." aria-label="Search" name="query" required>
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+            <!-- Tabs -->
+            <div class="col-12">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="trends-tab" data-bs-toggle="tab" href="#trends" role="tab" aria-controls="trends" aria-selected="true">
+                            <i class="fas fa-fire"></i> Trends
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="reddit-tab" data-bs-toggle="tab" href="#reddit" role="tab" aria-controls="reddit" aria-selected="false">
+                            <i class="fab fa-reddit"></i> Reddit
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="youtube-tab" data-bs-toggle="tab" href="#youtube" role="tab" aria-controls="youtube" aria-selected="false">
+                            <i class="fab fa-youtube"></i> YouTube
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="google-tab" data-bs-toggle="tab" href="#google" role="tab" aria-controls="google" aria-selected="false">
+                            <i class="fab fa-google"></i> Google
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="twitter-tab" data-bs-toggle="tab" href="#google" role="tab" aria-controls="twitter" aria-selected="false">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="spotify-tab" data-bs-toggle="tab" href="#spotify" role="tab" aria-controls="spotify" aria-selected="false">
+                            <i class="fab fa-spotify"></i> Spotify
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="news-tab" data-bs-toggle="tab" href="#news" role="tab" aria-controls="news" aria-selected="false">
+                            <i class="fa-solid fa-newspaper"></i> News
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="movies-tv-shows-tab" data-bs-toggle="tab" href="#movies-tv-shows" role="tab" aria-controls="movies-tv-shows" aria-selected="false">
+                            <i class="fa-solid fa-film"></i> Movies-tv-shows
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="finance-tab" data-bs-toggle="tab" href="#finance" role="tab" aria-controls="finance" aria-selected="false">
+                            <i class="fab fa-dollar-sign"></i> Finance
+                        </a>
+                    </li>
+                    <!-- Add other tabs here -->
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <!-- Trends Tab -->
+                    <div class="tab-pane fade show active" id="trends" role="tabpanel" aria-labelledby="trends-tab">
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 my-3">
+                            {% for trend in all_trends %}
+                            <div class="col">
+                                <div class="card h-100">
+                                    {% if trend.cover_picture_url %}
+                                    <img src="{{ trend.cover_picture_url }}" class="card-img-top" alt="{{ trend.title }}">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ trend.title }}</h5>
+                                        <p class="card-text">{{ trend.description|truncatechars:100 }}</p>
+                                        <p class="card-text"><small class="text-muted">Source: {{ trend.source }}</small></p>
+                                        <div class="d-flex justify-content-between">
+                                            <a href="{{ trend.url }}" class="btn btn-primary btn-sm" target="_blank">View</a>
+                                            <button class="btn btn-sm btn-outline-secondary share-btn" onclick="shareItem('{{ trend.title }}', '{{ trend.url }}')">
+                                                <i class="fas fa-share-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Reddit Tab -->
+                    <div class="tab-pane fade" id="reddit" role="tabpanel" aria-labelledby="reddit-tab">
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 my-3">
+                            {% for trend in reddit_trends %}
+                            <div class="col">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ trend.title }}</h5>
+                                        <p class="card-text"><a href="{{ trend.url }}" target="_blank">{{ trend.source }}</a></p>
+                                        <div class="d-flex justify-content-between">
+                                            <button class="btn btn-sm btn-outline-primary bookmark-btn" onclick="bookmarkItem('{{ trend.title }}', '{{ trend.url }}', '{{ trend.source }}')">
+                                                <i class="fas fa-bookmark"></i> Bookmark
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary share-btn" onclick="shareItem('{{ trend.title }}', '{{ trend.url }}')">
+                                                <i class="fas fa-share-alt"></i> Share
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="col-12">No Reddit trends available.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- YouTube Tab -->
+                    <div class="tab-pane fade" id="youtube" role="tabpanel" aria-labelledby="youtube-tab">
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 my-3">
+                            {% for trend in youtube_trends %}
+                            <div class="col">
+                                <div class="card h-100">
+                                    <img src="{{ trend.cover_picture_url }}" class="card-img-top" alt="{{ trend.title }}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ trend.title }}</h5>
+                                        <p class="card-text">{{ trend.description|slice:":100" }}{% if trend.description|length > 100 %}...{% endif %}</p>
+                                        <div class="d-flex justify-content-between">
+                                            <a href="{{ trend.url }}" class="btn btn-primary btn-sm" target="_blank">Watch Now</a>
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-primary bookmark-btn" onclick="bookmarkItem('{{ trend.title }}', '{{ trend.url }}', '{{ trend.source }}')">
+                                                    <i class="fas fa-bookmark"></i> Bookmark
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-secondary share-btn" onclick="shareItem('{{ trend.title }}', '{{ trend.url }}')">
+                                                    <i class="fas fa-share-alt"></i> Share
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="col-12">No YouTube trends available.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Add other tab content here -->
+                    <!-- Google Trends Tab -->
+                    <div class="tab-pane fade" id="google" role="tabpanel" aria-labelledby="google-tab">
+        <div class="row">
+            {% for trend in google_trends %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ trend.title }}</h5>
+                        <p class="card-text">{{ trend.description }}</p>
+                        <a href="{{ trend.url }}" class="btn btn-primary" target="_blank">Explore</a>
+                        <button class="btn btn-sm btn-outline-primary bookmark-btn" onclick="bookmarkItem('{{ trend.title }}', '{{ trend.url }}', '{{ trend.source }}')">
+    <i class="fas fa-bookmark"></i> Bookmark
+</button>
+
+<button class="btn btn-sm btn-outline-secondary share-btn" onclick="shareItem('{{ trend.title }}', '{{ trend.url }}')">
+    <i class="fas fa-share-alt"></i> Share
+</button>
+
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="col-12">No Google Trends available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+                    <!-- Twitter Trends Tab -->
+                    <div class="tab-pane fade" id="twitter" role="tabpanel" aria-labelledby="twitter-tab">
+    <div class="row">
+        {% for trend in twitter_trends %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ trend.title }}</h5> <!-- Displaying trend title -->
+                    <p class="card-text">{{ trend.description }}</p> <!-- Displaying tweet volume or description -->
+
+                    {% if trend.url and trend.url != '#' %}
+                        <a href="{{ trend.url }}" class="btn btn-primary" target="_blank">Explore</a>
+                    {% else %}
+                        <a href="https://twitter.com/search?q={{ trend.title|urlencode }}" class="btn btn-primary" target="_blank">Explore on Twitter</a>
+                    {% endif %}
+
+                    <button class="btn btn-sm btn-outline-primary bookmark-btn" onclick="bookmarkItem('{{ trend.title }}', '{{ trend.url }}', 'Twitter')">
+                        <i class="fas fa-bookmark"></i> Bookmark
+                    </button>
+
+                    <button class="btn btn-sm btn-outline-secondary share-btn" onclick="shareItem('{{ trend.title }}', '{{ trend.url }}')">
+                        <i class="fas fa-share-alt"></i> Share
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="col-12">No Twitter Trends available.</p>
+        {% endfor %}
+    </div>
+</div>
+
+                    <!-- Spotify Trends Tab -->
+                    <div class="tab-pane fade" id="spotify" role="tabpanel" aria-labelledby="spotify-tab">
+        <div class="row">
+            {% for trend in spotify_trends %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card">
+                    <img src="{{ trend.cover_picture_url }}" class="card-img-top" alt="{{ trend.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ trend.title }}</h5>
+                        <p class="card-text">{{ trend.description }}</p>
+                        <a href="{{ trend.url }}" class="btn btn-primary" target="_blank">Listen Now</a>
+                        <button class="btn btn-sm btn-outline-primary bookmark-btn" onclick="bookmarkItem('{{ trend.title }}', '{{ trend.url }}', '{{ trend.source }}')">
+    <i class="fas fa-bookmark"></i> Bookmark
+</button>
+
+<button class="btn btn-sm btn-outline-secondary share-btn" onclick="shareItem('{{ trend.title }}', '{{ trend.url }}')">
+    <i class="fas fa-share-alt"></i> Share
+</button>
+
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="col-12">No Spotify trends available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+                    <!-- News Tab -->
+                    <div class="tab-pane fade" id="news" role="tabpanel" aria-labelledby="news-tab">
+        <div class="row">
+            {% for trend in latest_news %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card">
+                    <img src="{{ trend.cover_picture_url }}" class="card-img-top" alt="{{ trend.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ trend.title }}</h5>
+                        <p class="card-text">{{ trend.description }}</p>
+                        <p class="card-text">{{ trend.source }}</p>
+                        <a href="{{ trend.url }}" class="btn btn-primary" target="_blank">Read More</a>
+                        <button class="btn btn-sm btn-outline-primary bookmark-btn" onclick="bookmarkItem('{{ trend.title }}', '{{ trend.url }}', '{{ trend.source }}')">
+    <i class="fas fa-bookmark"></i> Bookmark
+</button>
+
+<button class="btn btn-sm btn-outline-secondary share-btn" onclick="shareItem('{{ trend.title }}', '{{ trend.url }}')">
+    <i class="fas fa-share-alt"></i> Share
+</button>
+
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="col-12">No latest news available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+                    <!-- Movies/TV Shows Tab -->
+                    <div class="tab-pane fade" id="movies-tv-shows" role="tabpanel" aria-labelledby="movies-tv-shows-tab">
+    <div class="row">
+        <!-- Movies Section -->
+        <div class="col-md-6 mb-4">
+    <h4>Movies</h4>
+    {% if latest_content.movies %}
+        {% for movie in latest_content.movies %}
+        <div class="card mb-3">
+            <img src="{{ movie.cover_picture_url }}" class="card-img-top" alt="{{ movie.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ movie.title }}</h5>
+                <p class="card-text">{{ movie.description }}</p>
+                <a href="{{ movie.url }}" class="btn btn-primary" target="_blank">More Details</a>
+                <button class="btn btn-sm btn-outline-primary bookmark-btn" onclick="bookmarkItem('{{ trend.title }}', '{{ trend.url }}', '{{ trend.source }}')">
+    <i class="fas fa-bookmark"></i> Bookmark
+</button>
+
+<button class="btn btn-sm btn-outline-secondary share-btn" onclick="shareItem('{{ trend.title }}', '{{ trend.url }}')">
+    <i class="fas fa-share-alt"></i> Share
+</button>
+
+            </div>
+        </div>
+        {% empty %}
+        <p>No movies available.</p>
+        {% endfor %}
+    {% else %}
+    <p>No movies available.</p>
+    {% endif %}
+</div>
+
+        <!-- TV Shows Section -->
+        <div class="col-md-6 mb-4">
+    <h4>TV Shows</h4>
+    {% if latest_content.tv_shows %}
+        {% for show in latest_content.tv_shows %}
+        <div class="card mb-3">
+            <img src="{{ show.cover_picture_url }}" class="card-img-top" alt="{{ show.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ show.title }}</h5>
+                <p class="card-text">{{ show.description }}</p>
+                <a href="{{ show.url }}" class="btn btn-primary" target="_blank">More Details</a>
+                <button class="btn btn-sm btn-outline-primary bookmark-btn" onclick="bookmarkItem('{{ trend.title }}', '{{ trend.url }}', '{{ trend.source }}')">
+    <i class="fas fa-bookmark"></i> Bookmark
+</button>
+
+<button class="btn btn-sm btn-outline-secondary share-btn" onclick="shareItem('{{ trend.title }}', '{{ trend.url }}')">
+    <i class="fas fa-share-alt"></i> Share
+</button>
+
+            </div>
+        </div>
+        {% empty %}
+        <p>No TV shows available.</p>
+        {% endfor %}
+    {% else %}
+    <p>No TV shows available.</p>
+    {% endif %}
+</div>
+
+    </div>
+</div>
+
+                    <!-- Finance Tab -->
+                    <div class="tab-pane fade" id="finance" role="tabpanel" aria-labelledby="finance-tab">
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <form id="finance-form">
+                <div class="form-group">
+                    <label for="stock-symbols">Enter stock symbols (comma-separated):</label>
+                    <input type="text" id="stock-symbols" name="stock_symbols" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="crypto-symbols">Enter crypto symbols (comma-separated):</label>
+                    <input type="text" id="crypto-symbols" name="crypto_symbols" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Fetch Data</button>
+            </form>
+        </div>
+        <!-- Stock Data -->
+        <div class="col-lg-6 mb-4">
+            <h4>Latest Stock Data</h4>
+            {% for stock in latest_stocks %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stock.symbol }}</h5>
+                    <p class="card-text">Price: {{ stock.price }}</p>
+                    <p class="card-text">Change: {{ stock.change }} ({{ stock.change_percent }}%)</p>
+                    <a href="https://www.marketwatch.com/investing/stock/{{ stock.symbol }}" class="btn btn-primary" target="_blank">View Details</a>
+                </div>
+            </div>
+            {% empty %}
+            <p>No stock data available.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Crypto Data -->
+        <div class="col-lg-6 mb-4">
+            <h4>Latest Crypto Data</h4>
+            {% for crypto in latest_cryptos %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ crypto.symbol }}</h5>
+                    <p class="card-text">Price: ${{ crypto.price }}</p>
+                    <p class="card-text">Change: {{ crypto.change }} ({{ crypto.change_percent }}%)</p>
+                    <a href="https://coinmarketcap.com/currencies/{{ crypto.symbol_lower }}" class="btn btn-primary" target="_blank">View Details</a>
+                </div>
+            </div>
+            {% empty %}
+            <p>No crypto data available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+                </div>
+            </div>
+        </div>
+    </main>
+    {% endblock %}
+    <!-- Share Modal -->
+    <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shareModalLabel">Share this item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="shareContainer">
+                    <!-- Share options will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block footer %}
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h5>About Us</h5>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-white">Our Story</a></li>
+          <li><a href="#" class="text-white">Mission</a></li>
+          <li><a href="#" class="text-white">Careers</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h5>Support</h5>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-white">Contact Us</a></li>
+          <li><a href="#" class="text-white">FAQ</a></li>
+          <li><a href="#" class="text-white">Help Center</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h5>Follow Us</h5>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-white"><i class="fab fa-facebook"></i> Facebook</a></li>
+          <li><a href="#" class="text-white"><i class="fab fa-twitter"></i> Twitter</a></li>
+          <li><a href="#" class="text-white"><i class="fab fa-instagram"></i> Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="text-center mt-4">
+      <p>&copy; 2024 Your Company Name. All Rights Reserved.</p>
+    </div>
+  </div>
+</footer>
+    {% endblock %}
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'js/trends_finder.js' %}"></script>
+
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-label {
+            font-weight: bold;
+        }
+        .checkbox-list {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .checkbox-item {
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Page heading -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Edit Profile</h1>
+            <a class="btn btn-secondary" href="{% url 'profile' %}">Back to Profile</a>
+        </div>
+
+        <!-- Edit profile form -->
+        <div class="card p-4 shadow-sm">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- Bio field -->
+                <div class="mb-3">
+                    <label for="id_bio" class="form-label">Bio</label>
+                    {{ form.bio }}
+                </div>
+
+                <!-- Location field -->
+                <div class="mb-3">
+                    <label for="id_location" class="form-label">Location</label>
+                    {{ form.location }}
+                </div>
+
+                <!-- Birth Date field -->
+                <div class="mb-3">
+                    <label for="id_birth_date" class="form-label">Birth Date</label>
+                    {{ form.birth_date }}
+                </div>
+
+                <!-- Profile Picture field -->
+                <div class="mb-3">
+                    <label for="id_profile_picture" class="form-label">Profile Picture</label>
+                    {{ form.profile_picture }}
+                </div>
+
+                <!-- Preferred Categories field -->
+                <div class="mb-3">
+                    <label for="id_preferred_categories" class="form-label">Preferred Categories</label>
+                    <div class="checkbox-list">
+                        {% for checkbox in form.preferred_categories %}
+                            <div class="checkbox-item">
+                                {{ checkbox }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Save changes button -->
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

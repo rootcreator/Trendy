@@ -1,0 +1,26 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+h2 {
+    color: #343a40;
+}
+
+.category-title {
+    margin-top: 30px;
+    font-size: 1.5rem;
+    color: #007bff;
+}
+
+.search-results a {
+    text-decoration: none;
+}
+
+.search-results a:hover {
+    text-decoration: underline;
+}
+
+.text-danger {
+    font-size: 1.2rem;
+}

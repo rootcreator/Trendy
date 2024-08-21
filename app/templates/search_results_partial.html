@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom Styles -->
+    <style>
+        .result-section {
+            margin-bottom: 30px;
+        }
+        .result-section h2 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .list-group-item-action {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .list-group-item-action:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Reddit Results Section -->
+        <div class="result-section">
+            <h2>Reddit Results</h2>
+            <div class="list-group">
+                {% for result in reddit_results %}
+                    <a href="{{ result.url }}" class="list-group-item list-group-item-action">
+                        {{ result.title }}
+                    </a>
+                {% empty %}
+                    <div class="list-group-item">No results found.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- YouTube Results Section -->
+        <div class="result-section">
+            <h2>YouTube Results</h2>
+            <div class="list-group">
+                {% for result in youtube_results %}
+                    <a href="{{ result.url }}" class="list-group-item list-group-item-action">
+                        {{ result.title }}
+                    </a>
+                {% empty %}
+                    <div class="list-group-item">No results found.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Google Trends Results Section -->
+        <div class="result-section">
+            <h2>Google Trends Results</h2>
+            <div class="list-group">
+                {% for result in google_results %}
+                    <a href="{{ result.url }}" class="list-group-item list-group-item-action">
+                        {{ result.title }}
+                    </a>
+                {% empty %}
+                    <div class="list-group-item">No results found.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Spotify Results Section -->
+        <div class="result-section">
+            <h2>Spotify Results</h2>
+            <div class="list-group">
+                {% for result in spotify_results %}
+                    <a href="{{ result.url }}" class="list-group-item list-group-item-action">
+                        {{ result.title }}
+                    </a>
+                {% empty %}
+                    <div class="list-group-item">No results found.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- News Results Section -->
+        <div class="result-section">
+            <h2>News Results</h2>
+            <div class="list-group">
+                {% for result in news_results %}
+                    <a href="{{ result.url }}" class="list-group-item list-group-item-action">
+                        {{ result.title }}
+                    </a>
+                {% empty %}
+                    <div class="list-group-item">No results found.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Movie Results Section -->
+        <div class="result-section">
+            <h2>Movie Results</h2>
+            <div class="list-group">
+                {% for result in movie_results %}
+                    <a href="{{ result.url }}" class="list-group-item list-group-item-action">
+                        {{ result.title }}
+                    </a>
+                {% empty %}
+                    <div class="list-group-item">No results found.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- TV Show Results Section -->
+        <div class="result-section">
+            <h2>TV Show Results</h2>
+            <div class="list-group">
+                {% for result in tv_results %}
+                    <a href="{{ result.url }}" class="list-group-item list-group-item-action">
+                        {{ result.title }}
+                    </a>
+                {% empty %}
+                    <div class="list-group-item">No results found.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Optional JavaScript for smooth scrolling -->
+    <script>
+        function displayResults(data) {
+    const resultsContainer = document.getElementById('searchResults');
+    resultsContainer.innerHTML = ''; // Clear previous results
+
+    // Check if results exist for each type
+    const resultTypes = ['reddit_results', 'youtube_results', 'google_results', 'spotify_results', 'news_results', 'movie_results', 'tv_results'];
+
+    let resultsFound = false;
+
+    resultTypes.forEach(type => {
+        if (data[type] && data[type].length > 0) {
+            resultsFound = true;
+            data[type].forEach(trend => {
+                const trendElement = document.createElement('div');
+                trendElement.classList.add('result-item');
+                trendElement.innerHTML = `
+                    <h6>${trend.title}</h6>
+                    <p>${trend.description}</p>
+                `;
+                resultsContainer.appendChild(trendElement);
+            });
+        }
+    });
+
+    if (!resultsFound) {
+        resultsContainer.innerHTML = '<p>No trends found.</p>';
+    }
+}
+    </script>
+</body>
+</html>

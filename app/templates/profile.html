@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/profile-styles.css' %}">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'index' %}">Home</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <h1 class="nav-link active">{{ user_profile.user.username }}</h1>
+                        </li>
+                    </ul>
+                    <a class="btn btn-primary ms-auto" href="{% url 'edit_profile' %}">Edit Profile</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- User Profile Header -->
+        <div class="profile-header card mb-4">
+            <div class="row">
+                <!-- Profile Picture -->
+                <div class="col-md-3 profile-picture text-center">
+                    {% if user_profile.profile_picture %}
+                    <img src="{{ user_profile.profile_picture.url }}" alt="Profile Picture" class="img-fluid">
+                    {% else %}
+                    <img src="https://via.placeholder.com/150" alt="Default Profile Picture" class="img-fluid">
+                    {% endif %}
+                </div>
+                <!-- Profile Details -->
+                <div class="col-md-9 profile-details">
+                    <h2>{{ user_profile.user.username }}</h2>
+                    <p><strong>Bio:</strong> {{ user_profile.bio }}</p>
+                    <p><strong>Location:</strong> {{ user_profile.location }}</p>
+                    <p><strong>Birth Date:</strong> {{ user_profile.birth_date }}</p>
+                    <p><strong>Preferred Categories:</strong>
+                        {% for category in user_profile.preferred_categories.all %}
+                        {{ category.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookmarks Section -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">My Bookmarks</h2>
+            </div>
+            <div class="card-body bookmarks-list">
+                <div id="bookmarksList" class="list-group">
+                    <!-- Bookmarks will be dynamically loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            loadBookmarks();
+        });
+
+        function loadBookmarks() {
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            const bookmarksList = document.getElementById('bookmarksList');
+            bookmarksList.innerHTML = '';
+
+            if (bookmarks.length === 0) {
+                bookmarksList.innerHTML = '<p class="list-group-item">No bookmarks available.</p>';
+            } else {
+                bookmarks.forEach(bookmark => {
+                    const bookmarkHTML = `
+                        <div class="list-group-item bookmark-item d-flex justify-content-between align-items-center">
+                            <a href="${bookmark.url}" target="_blank" class="text-decoration-none">${bookmark.title}</a>
+                            <button class="btn btn-sm btn-outline-danger" onclick="removeBookmark('${bookmark.url}')">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    `;
+                    bookmarksList.innerHTML += bookmarkHTML;
+                });
+            }
+        }
+
+        function removeBookmark(url) {
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            bookmarks = bookmarks.filter(bookmark => bookmark.url !== url);
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            loadBookmarks();
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
